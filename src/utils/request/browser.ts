@@ -15,7 +15,7 @@ export default function(
   query: string,
   extern?: File
 ): {stream: Stream; cancel: () => void} {
-  const out = new PassThrough({encoding: 'utf8'})
+  const out = new PassThrough()
   const fullURL = `${basePath}/query?orgID=${encodeURIComponent(orgID)}`
 
   const xhr = new XMLHttpRequest()
@@ -25,19 +25,21 @@ export default function(
   let row = ''
 
   const handleData = (): void => {
-    const i0 = currentIndex
-    const i1 = xhr.responseText.length
+    const newText = xhr.responseText.slice(currentIndex)
+    currentIndex += xhr.responseText.length
 
-    for (let i = i0; i < i1; i++) {
-      row += xhr.responseText[i]
+    const parts = newText.split('\n')
 
-      if (xhr.responseText[i] === '\n') {
-        out.write(row)
-        row = ''
+    for (let i = 0; i < parts.length; i++) {
+      if (i === 0) {
+        out.write(Buffer.from(row + parts[i] + '\n', 'utf8'))
+      } else if (i === parts.length - 1) {
+        row = parts[i]
+      } else {
+        out.write(Buffer.from(parts[i] + '\n', 'utf8'))
       }
     }
 
-    currentIndex = i1
     timer = setTimeout(handleData, CHECK_LIMIT_INTERVAL)
   }
 

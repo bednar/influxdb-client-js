@@ -24,23 +24,27 @@ var CancellationError = (function (_super) {
 exports.CancellationError = CancellationError;
 var CHECK_LIMIT_INTERVAL = 200;
 function default_1(orgID, basePath, baseOptions, query, extern) {
-    var out = new stream_1.PassThrough({ encoding: 'utf8' });
+    var out = new stream_1.PassThrough();
     var fullURL = basePath + "/query?orgID=" + encodeURIComponent(orgID);
     var xhr = new XMLHttpRequest();
     var currentIndex = 0;
     var timer = null;
     var row = '';
     var handleData = function () {
-        var i0 = currentIndex;
-        var i1 = xhr.responseText.length;
-        for (var i = i0; i < i1; i++) {
-            row += xhr.responseText[i];
-            if (xhr.responseText[i] === '\n') {
-                out.write(row);
-                row = '';
+        var newText = xhr.responseText.slice(currentIndex);
+        currentIndex += xhr.responseText.length;
+        var parts = newText.split('\n');
+        for (var i = 0; i < parts.length; i++) {
+            if (i === 0) {
+                out.write(Buffer.from(row + parts[i] + '\n', 'utf8'));
+            }
+            else if (i === parts.length - 1) {
+                row = parts[i];
+            }
+            else {
+                out.write(Buffer.from(parts[i] + '\n', 'utf8'));
             }
         }
-        currentIndex = i1;
         timer = setTimeout(handleData, CHECK_LIMIT_INTERVAL);
     };
     var handleError = function () {
