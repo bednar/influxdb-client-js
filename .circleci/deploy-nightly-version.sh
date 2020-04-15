@@ -13,8 +13,10 @@ git commit -am "chore(release): prepare to release influxdb-client-js-${VERSION}
 
 # Build
 cd "${SCRIPT_PATH}"/../packages/core
+npm install
 yarn build
 cd "${SCRIPT_PATH}"/../packages/apis
+npm install
 yarn build
 
 # Publish
