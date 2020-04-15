@@ -12,7 +12,7 @@ git commit -am "chore(release): prepare to release influxdb-client-js-${VERSION}
 # Build Core
 cd "${SCRIPT_PATH}"/../packages/core
 #npm ci
-yarn add -D @typescript-eslint/eslint-plugin
+#yarn add -D @typescript-eslint/eslint-plugin
 yarn build
 
 # Build Apis
