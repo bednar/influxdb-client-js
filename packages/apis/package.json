@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "InfluxDB 2.0 generated APIs",
   "scripts": {
-    "build": "yarn run clean && yarn run lint && rollup -c",
+    "build": "yarn run clean && yarn run lint && yarn rollup -c",
     "build:doc": "yarn run clean && yarn typedoc",
     "clean": "rimraf build doc dist",
     "clean:apis": "rimraf src/generated/*API.ts",
